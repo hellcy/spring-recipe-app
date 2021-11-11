@@ -2,11 +2,13 @@ package com.yuancheng.springrecipeapp.services;
 
 import com.yuancheng.springrecipeapp.models.Recipe;
 import com.yuancheng.springrecipeapp.repositories.RecipeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Service
 public class RecipeServiceImpl implements RecipeService{
   private final RecipeRepository recipeRepository;
@@ -17,6 +19,7 @@ public class RecipeServiceImpl implements RecipeService{
 
   @Override
   public Set<Recipe> getRecipes() {
+    log.debug("I am in the Service");
     Set<Recipe> recipes = new HashSet<>();
     /*
       double colon :: syntax is introduced in Java 8, it is Method Reference
