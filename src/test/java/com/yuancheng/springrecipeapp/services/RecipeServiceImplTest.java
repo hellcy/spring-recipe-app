@@ -71,4 +71,17 @@ public class RecipeServiceImplTest {
     // verify if the return data recipes has size 1
     verify(recipeRepository, times(1)).findAll();
   }
+
+  @Test
+  void deleteById() {
+
+    // given
+    Long idToDelete = Long.valueOf(2L);
+
+    // when
+    recipeService.deleteById(idToDelete);
+
+    // then
+    verify(recipeRepository, times(1)).deleteById(anyLong());
+  }
 }
