@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CategoryCommandToCategoryTest {
 
-  public static final Long ID_VALUE = new Long(1L);
+  public static final Long ID_VALUE = 1L;
   public static final String DESCRIPTION = "description";
 
   CategoryCommandToCategory converter;

@@ -1,21 +1,29 @@
 package com.yuancheng.springrecipeapp.services;
 
+import com.yuancheng.springrecipeapp.commands.RecipeCommand;
+import com.yuancheng.springrecipeapp.converters.RecipeCommandToRecipe;
+import com.yuancheng.springrecipeapp.converters.RecipeToRecipeCommand;
 import com.yuancheng.springrecipeapp.models.Recipe;
 import com.yuancheng.springrecipeapp.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
 @Service
-public class RecipeServiceImpl implements RecipeService{
+public class RecipeServiceImpl implements RecipeService {
   private final RecipeRepository recipeRepository;
+  private final RecipeCommandToRecipe recipeCommandToRecipe;
+  private final RecipeToRecipeCommand recipeToRecipeCommand;
 
-  public RecipeServiceImpl(RecipeRepository recipeRepository) {
+  public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe, RecipeToRecipeCommand recipeToRecipeCommand) {
     this.recipeRepository = recipeRepository;
+    this.recipeCommandToRecipe = recipeCommandToRecipe;
+    this.recipeToRecipeCommand = recipeToRecipeCommand;
   }
 
   @Override
@@ -44,5 +52,16 @@ public class RecipeServiceImpl implements RecipeService{
       throw new RuntimeException("Recipe not found!");
     }
     return recipeOptional.get();
+  }
+
+  @Override
+  @Transactional
+  public RecipeCommand saveRecipeCommand(RecipeCommand recipeCommand) {
+    Recipe detachedRecipe = recipeCommandToRecipe.convert(recipeCommand);
+
+    Recipe savedRecipe = recipeRepository.save(detachedRecipe);
+    log.debug("Saved Recipe Id: " + savedRecipe.getId());
+
+    return recipeToRecipeCommand.convert(savedRecipe);
   }
 }
