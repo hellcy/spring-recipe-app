@@ -1,6 +1,8 @@
 package com.yuancheng.springrecipeapp.controllers;
 
+import com.yuancheng.springrecipeapp.commands.IngredientCommand;
 import com.yuancheng.springrecipeapp.commands.RecipeCommand;
+import com.yuancheng.springrecipeapp.services.IngredientService;
 import com.yuancheng.springrecipeapp.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -20,6 +21,9 @@ class IngredientControllerTest {
   @Mock
   RecipeService recipeService;
 
+  @Mock
+  IngredientService ingredientService;
+
   IngredientController ingredientController;
 
   MockMvc mockMvc;
@@ -27,7 +31,7 @@ class IngredientControllerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    ingredientController = new IngredientController(recipeService);
+    ingredientController = new IngredientController(recipeService, ingredientService);
 
     mockMvc = MockMvcBuilders.standaloneSetup(ingredientController).build();
   }
@@ -42,5 +46,20 @@ class IngredientControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name("/recipe/ingredient/list"))
             .andExpect(model().attributeExists("recipe"));
+  }
+
+  @Test
+  void testShowIngredient() throws Exception{
+    // given
+    IngredientCommand ingredientCommand = new IngredientCommand();
+
+    // when
+    when(ingredientService.findByRecipeIdAndIngredientId(anyLong(), anyLong())).thenReturn(ingredientCommand);
+
+    // then
+    mockMvc.perform(get("/recipe/1/ingredients/2/show"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("/recipe/ingredient/show"))
+            .andExpect(model().attributeExists("ingredient"));
   }
 }
