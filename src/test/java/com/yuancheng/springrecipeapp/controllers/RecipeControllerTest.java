@@ -31,7 +31,7 @@ class RecipeControllerTest {
   }
 
   @Test
-  void getRecipeTest() throws Exception {
+  void testGetRecipe() throws Exception {
     Recipe recipe = new Recipe();
     recipe.setId(1L);
 
