@@ -59,4 +59,9 @@ public class Recipe {
     ingredient.setRecipe(this);
     return this;
   }
+
+  public Recipe removingIngredient(Ingredient ingredient) {
+    this.ingredients.remove(ingredient);
+    return this;
+  }
 }
