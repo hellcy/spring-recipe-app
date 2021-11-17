@@ -68,7 +68,10 @@ public class IngredientServiceImpl implements IngredientService {
               .findFirst();
 
       if (!ingredientOptional.isPresent()) {
-        recipe.addingIngredient(ingredientCommandToIngredient.convert(ingredientCommand));
+        Ingredient ingredient = ingredientCommandToIngredient.convert(ingredientCommand);
+        ingredient.setRecipe(recipe);
+        recipe.addingIngredient(ingredient);
+
       } else {
         Ingredient ingredientFound = ingredientOptional.get();
         ingredientFound.setDescription(ingredientCommand.getDescription());
@@ -80,12 +83,23 @@ public class IngredientServiceImpl implements IngredientService {
 
       Recipe savedRecipe = recipeRepository.save(recipe);
 
-      return ingredientToIngredientCommand.convert(savedRecipe
-              .getIngredients()
-              .stream()
+      Optional<Ingredient> savedIngredientOptional = savedRecipe.getIngredients().stream()
               .filter(ingredient -> ingredient.getId().equals(ingredientCommand.getId()))
-              .findFirst()
-              .get());
+              .findFirst();
+
+      // new ingredient doesn't have id
+      // savedIngredientOptional will be null if it is new ingredient
+      if (!savedIngredientOptional.isPresent()) {
+        // check by every property
+        // not totally save... but best guess
+        savedIngredientOptional = savedRecipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getDescription().equals(ingredientCommand.getDescription()))
+                .filter(ingredient -> ingredient.getAmount().equals(ingredientCommand.getAmount()))
+                .filter(ingredient -> ingredient.getUom().getId().equals(ingredientCommand.getUnitOfMeasure().getId()))
+                .findFirst();
+      }
+
+      return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
     }
   }
 

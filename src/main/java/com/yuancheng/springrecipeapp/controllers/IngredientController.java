@@ -1,6 +1,8 @@
 package com.yuancheng.springrecipeapp.controllers;
 
 import com.yuancheng.springrecipeapp.commands.IngredientCommand;
+import com.yuancheng.springrecipeapp.commands.RecipeCommand;
+import com.yuancheng.springrecipeapp.commands.UnitOfMeasureCommand;
 import com.yuancheng.springrecipeapp.services.IngredientService;
 import com.yuancheng.springrecipeapp.services.RecipeService;
 import com.yuancheng.springrecipeapp.services.UnitOfMeasureService;
@@ -8,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Slf4j
 @Controller
@@ -65,6 +69,25 @@ public class IngredientController {
     log.debug("saved ingredient id: " + savedCommand.getId());
 
     return "redirect:/recipe/" + savedCommand.getRecipeId() + "/ingredients/" + savedCommand.getId() + "/show";
+  }
+
+  @GetMapping
+  @RequestMapping("recipe/{recipeId}/ingredients/new")
+  public String newIngredient(@PathVariable String recipeId, Model model) {
+
+    // make sure we have a good id value
+    RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(recipeId));
+    // todo raise exception if null
+
+    IngredientCommand ingredientCommand = new IngredientCommand();
+    ingredientCommand.setRecipeId(recipeCommand.getId());
+    ingredientCommand.setUnitOfMeasure(new UnitOfMeasureCommand());
+
+    model.addAttribute("ingredient", ingredientCommand);
+
+    model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
+
+    return "/recipe/ingredient/ingredientForm";
   }
 
 }
