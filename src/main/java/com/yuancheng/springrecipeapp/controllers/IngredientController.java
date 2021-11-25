@@ -11,8 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
-
 @Slf4j
 @Controller
 public class IngredientController {
@@ -76,7 +74,7 @@ public class IngredientController {
 
     IngredientCommand ingredientCommand = new IngredientCommand();
     ingredientCommand.setRecipeId(recipeCommand.getId());
-    ingredientCommand.setUnitOfMeasure(new UnitOfMeasureCommand());
+    ingredientCommand.setUom(new UnitOfMeasureCommand());
 
     model.addAttribute("ingredient", ingredientCommand);
 
